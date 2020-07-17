@@ -25,7 +25,7 @@ var bricks = [];
 for (var c = 0; c < brickColumnCount; c++) {
     bricks[c] = [];
     for (var r = 0; r < brickRowCount; r++) {
-        bricks[c][r] = { x: 0, y: 0 };
+        bricks[c][r] = { x: 0, y: 0, status: 1 };
     }
 }
 
@@ -40,15 +40,17 @@ function drawBall() {
 function drawBricks() {
     for (var c = 0; c < brickColumnCount; c++) {
         for (var r = 0; r < brickRowCount; r++) {
-            var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-            var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-            bricks[c][r].x = brickX;
-            bricks[c][r].y = brickY;
-            ctx.beginPath();
-            ctx.rect(brickX, brickY, brickWidth, brickHeight);
-            ctx.fillStyle = "green";
-            ctx.fill();
-            ctx.closePath();
+            if (bricks[c][r].status === 1) {
+                var brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
+                var brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
+                bricks[c][r].x = brickX;
+                bricks[c][r].y = brickY;
+                ctx.beginPath();
+                ctx.rect(brickX, brickY, brickWidth, brickHeight);
+                ctx.fillStyle = "green";
+                ctx.fill();
+                ctx.closePath();
+            }
         }
     }
 }
@@ -61,12 +63,46 @@ function drawPaddle() {
     ctx.closePath();
 }
 
+function keyDownHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = true;
+    }
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = true;
+    }
+}
+
+function keyUpHandler(e) {
+    if (e.key == "Right" || e.key == "ArrowRight") {
+        rightPressed = false;
+    }
+    else if (e.key == "Left" || e.key == "ArrowLeft") {
+        leftPressed = false;
+    }
+}
+
+function collisionDetector() {
+    for (var c = 0; c < brickColumnCount; c++) {
+        for (var r = 0; r < brickRowCount; r++) {
+            var brickObject = bricks[c][r];
+            if (brickObject.status === 1) {
+                if (x > brickObject.x && x < brickObject.x + brickWidth && y > brickObject.y && y < brickObject.y + brickHeight) {
+                    dy = -dy;
+                    brickObject.status = 0;
+                }
+            }
+        }
+    }
+}
+
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     drawBall();
     drawBricks();
     drawPaddle();
+
+    collisionDetector();
 
     if ((x + ballRadius) > canvas.width || (x - ballRadius) < 0) {
         dx = -dx
@@ -97,26 +133,6 @@ function draw() {
         if (paddleX < 0) {
             paddleX = 0;
         }
-    }
-
-
-}
-
-function keyDownHandler(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = true;
-    }
-    else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = true;
-    }
-}
-
-function keyUpHandler(e) {
-    if (e.key == "Right" || e.key == "ArrowRight") {
-        rightPressed = false;
-    }
-    else if (e.key == "Left" || e.key == "ArrowLeft") {
-        leftPressed = false;
     }
 }
 
