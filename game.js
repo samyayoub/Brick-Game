@@ -22,6 +22,7 @@ var brickOffsetTop = 30;
 var brickOffsetLeft = 30;
 
 var score = 0;
+var lives = 3;
 
 // Creating the bricks array
 var bricks = [];
@@ -115,7 +116,6 @@ function collisionDetector() {
                     if (score == brickRowCount * brickColumnCount) {
                         alert("You did it. Congrats!");
                         document.location.reload();
-                        clearInterval(interval);
                     }
                 }
             }
@@ -130,6 +130,12 @@ function drawScore() {
     ctx.fillText("Score: " + score, 8, 20);
 }
 
+function drawLives() {
+    ctx.font = "16px Arial";
+    ctx.fillStyle = "#0095DD";
+    ctx.fillText("Lives: " + lives, canvas.width - 65, 20);
+}
+
 // Function to draw everything
 function draw() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -138,6 +144,7 @@ function draw() {
     drawBricks();
     drawPaddle();
     drawScore();
+    drawLives();
 
     collisionDetector();
 
@@ -156,8 +163,17 @@ function draw() {
         }
         // End game if ball misses the paddle (hits the bottom wall)
         else {
-            document.location.reload();
-            clearInterval(interval); //Needed for Chrome to end game
+            lives--;
+            if (!lives) {
+                alert("Game Over");
+                document.location.reload();
+            } else {
+                x = canvas.width / 2;
+                y = canvas.height - 30;
+                dx = 2;
+                xy = -2;
+                paddleX = (canvas.width - paddleWidth) / 2;
+            }
         }
     }
 
@@ -177,6 +193,7 @@ function draw() {
             paddleX = 0;
         }
     }
+    requestAnimationFrame(draw);
 }
 
 // Event listeners to the buttons
@@ -184,5 +201,4 @@ document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 document.addEventListener("mousemove", mouseMoveHandler, false);
 
-
-var interval = setInterval(draw, 10);
+draw();
