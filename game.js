@@ -90,6 +90,14 @@ function keyUpHandler(e) {
     }
 }
 
+// Function to hand mouse movement
+function mouseMoveHandler(e) {
+    var relativeX = e.clientX - canvas.offsetLeft;
+    if (relativeX > 0 && relativeX < canvas.width) {
+        paddleX = relativeX - paddleWidth / 2;
+    }
+}
+
 // Function to check for collision
 function collisionDetector() {
     for (var c = 0; c < brickColumnCount; c++) {
@@ -174,5 +182,7 @@ function draw() {
 // Event listeners to the buttons
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
+document.addEventListener("mousemove", mouseMoveHandler, false);
+
 
 var interval = setInterval(draw, 10);
